@@ -49,7 +49,7 @@ app:
     CAMO_URL: "{request.scheme}://{request.domain}:9000/"
     CAMO_KEY: "insecure camo key"
     DOCS_URL: "https://pythonhosted.org/{project}/"
-    FILES_BACKEND: "warehouse.packaging.services.LocalFileStorage path=/app/data/packages/ url=http://files.example.com/packages/{path}"
+    FILES_BACKEND: "warehouse.packaging.services.LocalFileStorage path=/app/data/packages/ url=http://172.16.3.28:8756/packages/{path}"
     RECAPTCHA_SITE_KEY: "${RECAPTCHA_SITE_KEY}"
     RECAPTCHA_SECRET_KEY: "${RECAPTCHA_SECRET_KEY}"
     STATUSPAGE_URL: https://2p66nmmycsj3.statuspage.io
@@ -58,6 +58,8 @@ web:
   extends:
     service: app
   command: gunicorn -b 0.0.0.0:8000 -n warehouse --reload warehouse.wsgi
+  volumes:
+    - ./packages:/app/data
   environment:
     PORT: 8000
   ports:
@@ -67,6 +69,16 @@ web:
     - redis
     - rabbitmq
     - elasticsearch
+
+nginx:
+  restart: always
+  image: nginx:latest
+  ports:
+    - "8756:8756"
+  volumes:
+    - ./packages:/app/data
+    - ./conf/nginx.conf:/etc/nginx/conf/nginx.conf
+  command: nginx -c conf/nginx.conf
 
 worker:
   extends:

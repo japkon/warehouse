@@ -1,0 +1,2 @@
+#!/bin/bash
+docker-compose run web psql -h db -d postgres -U postgres

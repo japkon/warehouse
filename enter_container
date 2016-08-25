@@ -1,0 +1,9 @@
+#!/bin/bash
+
+if [[ $# -ne 1 ]]; then
+    echo "USAGE: enter_container [docker_image]"
+    exit
+fi
+
+ID="$(docker ps | grep $1 | awk '{print $1}')"
+docker exec -t -i $ID /bin/bash

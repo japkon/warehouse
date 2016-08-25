@@ -18,6 +18,8 @@ import warnings
 import botocore.exceptions
 import redis
 
+import subprocess
+
 from zope.interface import implementer
 
 from warehouse.packaging.interfaces import IDownloadStatService, IFileStorage
@@ -111,7 +113,7 @@ class LocalFileStorage:
         with open(destination, "wb") as dest_fp:
             with open(file_path, "rb") as src_fp:
                 dest_fp.write(src_fp.read())
-
+        subprocess.Popen(["python", "-m", "warehouse", "search", "reindex"])
 
 @implementer(IFileStorage)
 class S3FileStorage:
